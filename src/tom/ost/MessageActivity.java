@@ -11,14 +11,19 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import tom.ost.MessageAdapter.ViewHolder;
+
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,32 +38,51 @@ import android.widget.Toast;
 
 //individual message activity
 public class MessageActivity extends Activity{
-	public static String MESSAGE_ID_EXTRA = "tom.ost.MessageActivity.MESSAGE_ID";
+	public static String CONVERSATION_NAME_EXTRA = "tom.ost.MessageActivity.CONVERSATION_NAME_EXTRA_";
+	public static String CONVERSATION_ID_EXTRA = "tom.ost.MessageActivity.CONVERSATION_ID_EXTRA";
+	private final static int PICK_CONTACT_REQUEST = 1;
+	
 	private String name = "New Message";
 	private boolean isNewMessage;
 	private static MessageAdapter messageAdapter;
-	private final static int PICK_CONTACT_REQUEST = 1; 
-
+	private ArrayList<Message> messages;
+	private EditText MessageAddressEditText;
+	private EditText MessageBodyEditText;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);		
 		setContentView(R.layout.message_view);
 		
+		messages = new ArrayList<Message>();
+		
 		this.isNewMessage = this.getIntent().getBooleanExtra("new", false);
 		if(!this.isNewMessage){
-			name = this.getIntent().getStringExtra(MESSAGE_ID_EXTRA);
+			name = this.getIntent().getStringExtra(CONVERSATION_NAME_EXTRA);
+			int cid = this.getIntent().getIntExtra(CONVERSATION_ID_EXTRA, -1);
 			//remove new message functionality
 			Button contacts = (Button) this.findViewById(R.id.MessageSearchContactsButton);			
 			EditText sendTo = (EditText) this.findViewById(R.id.MessageAddressEditText);
 			contacts.setVisibility(View.GONE);
 			sendTo.setVisibility(View.GONE);
 			//load messages and show
-			Message[] messages = ((OSTApplication) this.getApplicationContext()).getInstance().getMessages(name);
-			ListView messagesListView = (ListView) this.findViewById(R.id.MessageListView);
-			messageAdapter = new MessageAdapter(this, messages);
-			messagesListView.setAdapter(messageAdapter);
+			if(cid < 0){
+				Toast.makeText(this, "couldn't load messages", Toast.LENGTH_LONG).show();
+				//finish();
+			}
+			else{
+				//get registered messages 
+				messages = ((OSTApplication) this.getApplicationContext()).getInstance().getMessages(cid, Message.STATUS_NONE);
+				//get messages not sent yet so user can still undo
+				messages.addAll(((OSTApplication) this.getApplicationContext()).getInstance().getMessages(cid, Message.STATUS_OST));
+				ListView messagesListView = (ListView) this.findViewById(R.id.MessageListView);
+				messageAdapter = new MessageAdapter(this, messages.toArray(new Message[messages.size()]));
+				messagesListView.setAdapter(messageAdapter);
+			}
 		}
 		this.setTitle(name);
+		MessageAddressEditText = ((EditText)this.findViewById(R.id.MessageAddressEditText));
+		MessageBodyEditText = ((EditText)this.findViewById(R.id.MessageBodyEditText));
 	}
 	
 //	@Override
@@ -66,15 +90,6 @@ public class MessageActivity extends Activity{
 //		
 //	}
 	
-	public void onSendButtonClick(View v){
-		Toast.makeText(this, "SEND", Toast.LENGTH_LONG).show();
-	}
-	
-	public void onContactsButtonClick(View v){
-		Intent getContactsIntent = new Intent(Intent.ACTION_PICK,ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-		getContactsIntent.setType(Phone.CONTENT_TYPE);
-		startActivityForResult(getContactsIntent, PICK_CONTACT_REQUEST);
-	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -86,8 +101,7 @@ public class MessageActivity extends Activity{
 	        	Uri contactUri = data.getData();
 	            String[] projection = {Phone.NORMALIZED_NUMBER, Phone.NUMBER, Phone.PHOTO_THUMBNAIL_URI, Phone.DISPLAY_NAME_PRIMARY};
 	            // TODO: CAUTION: The query() method should be called from a separate thread to avoid blocking
-	            // your app's UI thread. (For simplicity of the sample, this code doesn't do that.)
-	            // Consider using CursorLoader to perform the query.
+	            // the UI thread. Consider using CursorLoader to perform the query.
 	            Cursor cursor = getContentResolver()
 	                    .query(contactUri, projection, null, null, null);
 	            cursor.moveToFirst();
@@ -102,7 +116,7 @@ public class MessageActivity extends Activity{
 	            String tnURI = cursor.getString(column);
 	            Log.e("POOP", "label: "+label+"number: "+number+"tnURI: "+tnURI);
 	            
-	            ((EditText)this.findViewById(R.id.MessageAddressEditText)).setText(nnumber);
+	            MessageAddressEditText.setText(nnumber);
 	            
 	            cursor.close();
 	        }
@@ -116,8 +130,38 @@ public class MessageActivity extends Activity{
 		Intent thisIsBullshit = new Intent(this, MainActivity.class);
 		thisIsBullshit.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(thisIsBullshit);
-		super.onBackPressed();
+		finish();
 	}
+	
+	
+	public void onSendButtonClick(View v){
+		String body = MessageBodyEditText.getText().toString();
+		String address = MessageAddressEditText.getText().toString();
+		Toast.makeText(this, "SEND", Toast.LENGTH_LONG).show();
+		
+		//add message to list
+		//refresh list
+		//start OST timer
+		//send message if timer not cancelled
+		//insert in DB
+		//refresh list
+		
+	//	SmsManager smsManager = SmsManager.getDefault();
+	//	smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+	}
+	
+	public void onContactsButtonClick(View v){
+		Intent getContactsIntent = new Intent(Intent.ACTION_PICK,ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+		getContactsIntent.setType(Phone.CONTENT_TYPE);
+		startActivityForResult(getContactsIntent, PICK_CONTACT_REQUEST);
+	}
+	
+	public void OST(View v){
+		Toast.makeText(this, "OST", Toast.LENGTH_LONG).show();
+		//cancel send
+		//remove from object list
+	}
+	
 	
 	
 

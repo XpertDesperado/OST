@@ -32,14 +32,12 @@ public class SMSReceiver extends BroadcastReceiver{
 		for (int i = 0; i < smsextras.length; i++) {
 			SmsMessage message = SmsMessage.createFromPdu((byte[]) smsextras[i]);
 			//add to db
-//			Message newMessage = new Message(message.getMessageBody(), message.getOriginatingAddress());
-//			String contactName = getContact(context, newMessage.getPhoneNumber());
-//			if(contactName == null){
-//				contactName = newMessage.getPhoneNumber();
-//			}
-			((OSTApplication) context.getApplicationContext()).getInstance().insertNewMessage(message);
+			Message newMessage = new Message(message.getMessageBody(), message.getOriginatingAddress());
+			newMessage.setStatus(Message.STATUS_NONE);
+System.out.println("RECEIVED MESSAGE" + newMessage.getBody());
+			int cID = ((OSTApplication) context.getApplicationContext()).getInstance().insertNewMessage(newMessage);
 			//notify user
-			OSTNotificationManager.notifyIncomingMessage(context, message);
+			OSTNotificationManager.notifyIncomingMessage(context, message, cID);
 		}
     }
 

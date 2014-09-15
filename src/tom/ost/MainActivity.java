@@ -13,7 +13,9 @@ import org.apache.http.message.BasicNameValuePair;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,11 +34,19 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		Conversation[] objects = ((OSTApplication) this.getApplicationContext()).getInstance().getConversations();
+System.out.println("START");
+		Conversation[] objects = (Conversation[])((OSTApplication) this.getApplicationContext()).getInstance().getConversations();
 		
 		MainActivity.conversationAdapter = new ConversationAdapter(this, objects);
-		this.setListAdapter(conversationAdapter);		
+		
+		//footer stuff
+		View footerView = this.getLayoutInflater().inflate(R.layout.conversation_footer, null);
+        TextView footerTextView = (TextView) footerView.findViewById(R.id.ConversationFooterTextView);
+        footerTextView.setText(String.format("You have %d conversations", objects.length));
+		this.getListView().addFooterView(footerView);
+		
+		this.setListAdapter(conversationAdapter);
+		
 	}
 
 	@Override
@@ -44,7 +54,8 @@ public class MainActivity extends ListActivity {
 	    // open message activity for that conversation
 		Conversation item = (Conversation) getListAdapter().getItem(position);
 		Intent messageIntent = new Intent(this, MessageActivity.class);
-		messageIntent.putExtra(MessageActivity.MESSAGE_ID_EXTRA, item.getName());
+		messageIntent.putExtra(MessageActivity.CONVERSATION_NAME_EXTRA, item.getName());
+		messageIntent.putExtra(MessageActivity.CONVERSATION_ID_EXTRA, item.getCID());
 		this.startActivity(messageIntent);
 	}
 	
@@ -68,35 +79,5 @@ public class MainActivity extends ListActivity {
 		}
 	}
 
-//	private void validateUser() {
-//		// from (240) 839-6322 //twillio number
-//		String ACCOUNT_SID = "AC45b00a5504e242b8a486ebf4cad405c9";
-//		String AUTH_TOKEN = "14f81f0216edcb78de9f99371eaa62aa";
-//		// var twilio = new TwilioRestClient(AccountSid, AuthToken);
-//		try {
-//			TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID,
-//					AUTH_TOKEN);
-//
-//			// Build a filter for the MessageList
-//			List<NameValuePair> params = new ArrayList<NameValuePair>();
-//			params.add(new BasicNameValuePair("Body", "message from OST"));
-//			params.add(new BasicNameValuePair("To", "+13018018683"));
-//			params.add(new BasicNameValuePair("From", "+12408396322"));
-//
-//			MessageFactory messageFactory = client.getAccount()
-//					.getMessageFactory();
-//			Message message;
-//			message = messageFactory.create(params);
-//			Button tv = (Button) this.findViewById(R.id.test_view);
-//			tv.setText(message.getSid());
-//			System.out.println(message.getSid());
-//		} catch (TwilioRestException e ) {
-//			// TODO Auto-generated catch block
-//			TextView tv = (TextView) this.findViewById(R.id.test_view);
-//			tv.setText(e.getErrorMessage());
-//			System.out.print(e.getErrorMessage());
-//		}
-//
-//	}
 
 }

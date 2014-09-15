@@ -24,27 +24,30 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int ComposeNewMessageMenuItem=0x7f08000d;
-        public static final int ConversationImageView=0x7f080001;
-        public static final int ConversationLastMessageTextView=0x7f080003;
+        public static final int ComposeNewMessageMenuItem=0x7f08000f;
+        public static final int ConversationFooterTextView=0x7f080001;
+        public static final int ConversationImageView=0x7f080002;
+        public static final int ConversationLastMessageTextView=0x7f080004;
         public static final int ConversationList=0x7f080000;
-        public static final int ConversationNameTextView=0x7f080002;
-        public static final int MessageAddressEditText=0x7f080005;
-        public static final int MessageBodyEditText=0x7f080008;
-        public static final int MessageBodyLayout=0x7f080007;
-        public static final int MessageItemBody=0x7f08000a;
-        public static final int MessageItemDate=0x7f08000b;
-        public static final int MessageItemImageView=0x7f08000c;
-        public static final int MessageListView=0x7f080006;
-        public static final int MessageSearchContactsButton=0x7f080004;
-        public static final int MessageSendButton=0x7f080009;
+        public static final int ConversationNameTextView=0x7f080003;
+        public static final int MessageAddressEditText=0x7f080006;
+        public static final int MessageBodyEditText=0x7f080009;
+        public static final int MessageBodyLayout=0x7f080008;
+        public static final int MessageItemBody=0x7f08000c;
+        public static final int MessageItemDate=0x7f08000d;
+        public static final int MessageItemImageView=0x7f08000e;
+        public static final int MessageListView=0x7f080007;
+        public static final int MessageSearchContactsButton=0x7f080005;
+        public static final int MessageSendButton=0x7f08000a;
+        public static final int OSTButton=0x7f08000b;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int conversation_view_item=0x7f030001;
-        public static final int message_view=0x7f030002;
-        public static final int message_view_item_me=0x7f030003;
-        public static final int message_view_item_them=0x7f030004;
+        public static final int conversation_footer=0x7f030001;
+        public static final int conversation_view_item=0x7f030002;
+        public static final int message_view=0x7f030003;
+        public static final int message_view_item_me=0x7f030004;
+        public static final int message_view_item_them=0x7f030005;
     }
     public static final class menu {
         public static final int main=0x7f070000;

@@ -7,7 +7,12 @@
     <RelativeLayout 
         android:layout_width="50dp"
         android:layout_height="wrap_content" 
-        android:gravity="left"/>
+        android:gravity="left">
+        <Button 
+            android:id="@+id/OSTButton"
+            android:onClick="OST"
+            android:src="@drawable/ic_launcher"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
